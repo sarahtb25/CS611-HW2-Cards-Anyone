@@ -97,20 +97,33 @@ public class TETable implements Table{
         }
     }
 
-    public void playRound(){
+    public void dealCards(){
         if(numOfRounds == 0){
             // Dealer deals 1 card facedown to each player, dealer gets 1 faceup card
             for(TECardPlayer player: players){
-                player.addCardToHand(cards.drawCard());
+                if(player.isBanker()){
+                    player.addPlayingCardToHand(cards.drawCard(), false);
+                }
+                else {
+                    player.addPlayingCardToHand(cards.drawCard(), true);
+                }
             }
         }
         else if(numOfRounds == 1){
             // Dealer deals 2 cards faceup to each player
+            for(TECardPlayer player: players){
+                player.addPlayingCardToHand(cards.drawCard(), false);
+                player.addPlayingCardToHand(cards.drawCard(), false);
+            }
         }
-        else{
+    }
 
+    public void playRound(){
+        dealCards();
+        System.out.println("Its time to place your bets");
+        for(TECardPlayer player: players){
+            System.out.println("Place your bets please");
         }
-
     }
 
     public void clearPlayerCards() {

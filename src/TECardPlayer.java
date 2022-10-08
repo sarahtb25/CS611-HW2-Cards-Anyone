@@ -8,6 +8,8 @@ public class TECardPlayer extends Player {
     private int valOfCards;
     private char currentStatus;
     private boolean isBust;
+    private boolean isFold;
+    private boolean isStand;
     private List<PlayingCard> hand;
 
     public TECardPlayer(int id, String name) {
@@ -84,6 +86,14 @@ public class TECardPlayer extends Player {
 
     public void setBust(boolean bust) {
         isBust = bust;
+    }
+
+    public boolean isStand() {
+        return isStand;
+    }
+
+    public void setStand(boolean stand) {
+        isStand = stand;
     }
 
     public void clearPlayingCards() {
