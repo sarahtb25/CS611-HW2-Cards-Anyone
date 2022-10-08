@@ -82,7 +82,8 @@ public class TECardPlayer extends Player {
         hand.clear();
     }
 
-    public void addPlayingCardToHand(PlayingCard card) {
+    public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
+        card.setIsFaceDown(isFaceDown);
         hand.add(card);
     }
 
