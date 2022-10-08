@@ -1,7 +1,14 @@
 public class Piece {
-    int id;     // also equals piece value - used to calculate player winning
-    char type;  // for tic tac toe game type doesn't matter, but for a game like chess we can have 2 types of pieces white and black
+    int id;     // From 1 = Ace till 13 = King
+    char type;  // 4 suites =>
+    // H for Heart
+    // D for Diamond
+    // C for Club
+    // S for Spades
     char displayChar;
+    // A = Ace
+    // J, Q, K for face cards
+    // rest integers
 
     Piece(){
         this.id = -1;   // -1 for absence of a piece, an empty piece
