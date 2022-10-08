@@ -2,7 +2,6 @@ import java.util.List;
 
 public class TECardPlayer extends Player {
     private boolean isBanker;
-    private boolean isFold;
     private int bet;
     private int initBalance;    // initial balance at the start of the round
     private int finalBalance;   // final balance at the end of the round
@@ -15,5 +14,67 @@ public class TECardPlayer extends Player {
         super(id, name);
     }
 
+    public boolean isBroke() {
+        if (finalBalance > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
+    public boolean isBanker() {
+        return isBanker;
+    }
+
+    public void setBanker(boolean banker) {
+        isBanker = banker;
+    }
+
+    public int getBet() {
+        return bet;
+    }
+
+    public void setBet(int bet) {
+        this.bet = bet;
+    }
+
+    public int getInitBalance() {
+        return initBalance;
+    }
+
+    public void setInitBalance(int initBalance) {
+        this.initBalance = initBalance;
+    }
+
+    public int getFinalBalance() {
+        return finalBalance;
+    }
+
+    public void setFinalBalance(int finalBalance) {
+        this.finalBalance = finalBalance;
+    }
+
+    public int getValOfCards() {
+        return valOfCards;
+    }
+
+    public void setValOfCards(int valOfCards) {
+        this.valOfCards = valOfCards;
+    }
+
+    public char getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(char currentStatus) {
+        this.currentStatus = currentStatus;
+    }
+
+    public boolean isBust() {
+        return isBust;
+    }
+
+    public void setBust(boolean bust) {
+        isBust = bust;
+    }
 }

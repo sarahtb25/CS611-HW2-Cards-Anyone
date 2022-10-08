@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class TETable implements Table{
@@ -61,6 +62,21 @@ public class TETable implements Table{
         }
     }
 
+    public String setBankerRandomly() {
+        int numPlayers = players.size();
+
+        Random rand = new Random();
+        int playerId = rand.nextInt(numPlayers);
+
+        while(players.get(playerId).isBroke()) {
+            playerId = rand.nextInt(numPlayers);
+        }
+
+        players.get(playerId).setBanker(true);
+
+        return players.get(playerId).getName();
+    }
+
     public void playGame(){
         boolean continuePlay = true;
         while(continuePlay){
@@ -71,12 +87,12 @@ public class TETable implements Table{
             Scanner scn = new Scanner(System.in);
             char ch = scn.next().charAt(0);
             while(ch != 'Y')
-            if(ch == 'N' || ch == 'n'){
-                continuePlay = false;
-            }
-            else {
+                if(ch == 'N' || ch == 'n'){
+                    continuePlay = false;
+                }
+                else {
 
-            }
+                }
 //            Ask whethere you want to play another round
         }
     }
