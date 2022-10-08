@@ -86,18 +86,30 @@ public class TETable implements Table{
             System.out.println("Would you like to play another round (Y/N)? ");
             Scanner scn = new Scanner(System.in);
             char ch = scn.next().charAt(0);
-            while(ch != 'Y')
-                if(ch == 'N' || ch == 'n'){
-                    continuePlay = false;
-                }
-                else {
-
-                }
+            while(ch != 'Y' && ch != 'y' && ch != 'N' && ch != 'n'){
+                System.out.println("Wrong input!! Enter again");
+                ch = scn.next().charAt(0);
+            }
+            if(ch == 'N' || ch == 'n'){
+                continuePlay = false;
+            }
 //            Ask whethere you want to play another round
         }
     }
 
     public void playRound(){
+        if(numOfRounds == 0){
+            // Dealer deals 1 card facedown to each player, dealer gets 1 faceup card
+            for(TECardPlayer player: players){
+                player.addCardToHand(cards.drawCard());
+            }
+        }
+        else if(numOfRounds == 1){
+            // Dealer deals 2 cards faceup to each player
+        }
+        else{
+
+        }
 
     }
 
