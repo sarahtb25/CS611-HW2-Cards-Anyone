@@ -1,6 +1,8 @@
 public class PlayingCard extends Piece {
     private int value;
     private boolean isFaceDown = false;
+    private int id;
+    private char suit;
 
     PlayingCard(int id, char suit, boolean isFaceDown) {
         super(id, getPlayingCardChar(id), suit);
@@ -40,11 +42,32 @@ public class PlayingCard extends Piece {
         return value;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public char getSuit() {
+        return suit;
+    }
+
+    public void setSuit(char suit) {
+        this.suit = suit;
+    }
+
     public void setIsFaceDown(boolean isFaceDown) {
         this.isFaceDown = isFaceDown;
     }
 
     public boolean getIsFaceDown() {
         return isFaceDown;
+    }
+
+    @Override
+    public String toString() {
+        return getSuit() + " " + getPlayingCardChar(id);
     }
 }
