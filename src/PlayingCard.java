@@ -1,4 +1,4 @@
-public abstract class PlayingCard extends Piece {
+public class PlayingCard extends Piece {
     private int value;
     private boolean isFaceDown = false;
     private int id;
@@ -28,8 +28,14 @@ public abstract class PlayingCard extends Piece {
         return displayChar;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setValue(int id) {
+        if (id >= 2 && id <= 10) {
+            value = id;
+        } else if (id == 1) { // A
+            value = 11;
+        } else { // J, Q, K
+            value = 10;
+        }
     }
 
     public int getValue() {
@@ -64,6 +70,4 @@ public abstract class PlayingCard extends Piece {
     public String toString() {
         return getSuit() + " " + getPlayingCardChar(id);
     }
-
-    abstract public void setPlayingCardValue(int id);
 }

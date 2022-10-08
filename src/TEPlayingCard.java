@@ -2,9 +2,10 @@ public class TEPlayingCard extends PlayingCard {
 
     TEPlayingCard(int id, char suit, boolean isFaceDown) {
         super(id, suit, isFaceDown);
+        setValue(id);
     }
 
-    @Override
+    //    @Override
     public void setPlayingCardValue(int id) {
         int value;
         if (id >= 2 && id <= 10) {
