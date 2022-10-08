@@ -25,10 +25,6 @@ public class PlayingCardDeck {
         this.numDeck = numDeck;
     }
 
-    public int getNumDeck() {
-        return numDeck;
-    }
-
     public void createCardDecks(int numDeck) {
         cardDeck.clear();
         for (int i = 0; i < numDeck; i++) {
@@ -38,6 +34,10 @@ public class PlayingCardDeck {
                 }
             }
         }
+    }
+
+    public List<PlayingCard> getCardDeck() {
+        return cardDeck;
     }
 
     public void shufflePlayingCards() {
