@@ -15,16 +15,26 @@ public class Piece {
         this.type = 'N';
         this.displayChar = ' ';
     }
+
     Piece(int pieceId, char disChar){
         this.id = pieceId;
         this.type = 'N';
         this.displayChar = disChar;
     }
+
     Piece(char disChar, char type){
         this.id = -1;
         this.type = type;
         this.displayChar = disChar;
     }
+
+    Piece(int pieceId, char disChar, char type) {
+        this.id = pieceId;
+        this.displayChar = disChar;
+        this.type = type;
+    }
+
+
 
     public void printPiece() {
         System.out.print(displayChar);
