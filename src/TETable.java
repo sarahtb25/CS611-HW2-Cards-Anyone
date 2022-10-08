@@ -100,4 +100,10 @@ public class TETable implements Table{
     public void playRound(){
 
     }
+
+    public void clearPlayerCards() {
+        for (TECardPlayer player : players) {
+            player.clearPlayingCards();
+        }
+    }
 }

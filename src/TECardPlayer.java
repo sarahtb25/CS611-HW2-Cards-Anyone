@@ -77,4 +77,16 @@ public class TECardPlayer extends Player {
     public void setBust(boolean bust) {
         isBust = bust;
     }
+
+    public void clearPlayingCards() {
+        hand.clear();
+    }
+
+    public void addPlayingCardToHand(PlayingCard card) {
+        hand.add(card);
+    }
+
+    public List<PlayingCard> getHand() {
+        return hand;
+    }
 }
