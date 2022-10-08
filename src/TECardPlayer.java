@@ -30,6 +30,14 @@ public class TECardPlayer extends Player {
         isBanker = banker;
     }
 
+    public boolean isFold() {
+        return isFold;
+    }
+
+    public void setFold(boolean fold) {
+        isFold = fold;
+    }
+
     public int getBet() {
         return bet;
     }
