@@ -1,11 +1,11 @@
 public class Piece {
-    int id;     // From 1 = Ace till 13 = King
-    char type;  // 4 suites =>
+    private int id;     // From 1 = Ace till 13 = King
+    private char type;  // 4 suites =>
     // H for Heart
     // D for Diamond
     // C for Club
     // S for Spades
-    char displayChar;
+    private char displayChar;
     // A = Ace
     // J, Q, K for face cards
     // rest integers
