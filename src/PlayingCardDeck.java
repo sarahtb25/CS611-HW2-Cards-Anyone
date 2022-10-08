@@ -7,13 +7,29 @@ public class PlayingCardDeck {
     private final int numCardsPerSuit = 13; // Number of cards in a suit
     private final char[] suits = {'H', 'D', 'S', 'C'};
 
-    private List<PlayingCard> cardDeck; // has 52 playing cards per deck
+    private List<PlayingCard> cardDeck;
+    private int numDeck;
 
-    PlayingCardDeck() {
+    PlayingCardDeck(int numDeck) {
+        setNumDeck(numDeck);
+        initPlayingCardDeck();
+        createCardDecks(numDeck);
+        shufflePlayingCards();
+    }
+
+    public void initPlayingCardDeck() {
         cardDeck = new ArrayList<PlayingCard>();
     }
 
-    public void setNumberOfDecks(int numDeck) {
+    public void setNumDeck(int numDeck) {
+        this.numDeck = numDeck;
+    }
+
+    public int getNumDeck() {
+        return numDeck;
+    }
+
+    public void createCardDecks(int numDeck) {
         cardDeck.clear();
         for (int i = 0; i < numDeck; i++) {
             for (int j = 0; j < numSuits; j++) {
