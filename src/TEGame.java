@@ -86,7 +86,8 @@ public class TEGame implements Game {
             bankerLastTurn();
 
             List<TECardPlayer> winners = calculateWinner();
-//            settleBets(winners);
+            settleBets(winners);
+            resetBets();
 
             setNumOfRounds(getNumOfRounds() + 1);
             System.out.println("Would you like to play another round (Y/N)? ");
@@ -305,5 +306,51 @@ public class TEGame implements Game {
         }
 
         return isNaturalTE;
+    }
+
+    public void settleBets(List<TECardPlayer> winners) {
+        // Only Banker wins => everyone else pays the banker
+        TECardPlayer banker = new TECardPlayer(-1, "None");
+
+        for (TECardPlayer player : players) {
+            if (player.isBanker()) {
+                banker = player;
+                break;
+            }
+        }
+
+        if (winners.size() == 1 && winners.get(0).isBanker()) {
+            for (TECardPlayer player : players) {
+                if (!player.isBanker() && !player.isFold()) {
+                    player.setFinalBalance(player.getFinalBalance() - player.getBet());
+                    winners.get(0).setFinalBalance(winners.get(0).getFinalBalance() + player.getBet());
+                }
+            }
+        } else { // winners other than bankers
+            for (TECardPlayer winner : winners) {
+                if (!winner.isBanker()) {
+                    winner.setFinalBalance(winner.getFinalBalance() + winner.getBet());
+                    banker.setFinalBalance(banker.getFinalBalance() - winner.getBet());
+                }
+            }
+        }
+
+        // losers pay the banker
+        for (TECardPlayer player : players) {
+            if (!player.isBanker() && !player.isFold() && player.isBust()) {
+                player.setFinalBalance(player.getFinalBalance() - player.getBet());
+                banker.setFinalBalance(banker.getFinalBalance() + player.getBet());
+            }
+        }
+    }
+
+    public void resetBets() {
+        for (TECardPlayer player: players) {
+            player.setBet(0);
+        }
+    }
+
+    public void updateHistory() {
+
     }
 }
