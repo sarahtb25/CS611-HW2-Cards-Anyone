@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 
 public class TEGame implements Game {
     private List<TECardPlayer> players;
@@ -91,6 +88,7 @@ public class TEGame implements Game {
             resetBets();
             cardRounds = 0;
             setNumOfRounds(getNumOfRounds() + 1);
+            sortPlayersByBalance();
 
             System.out.println("Would you like to play another round (Y/N)? ");
             char ch = Utility.checkYesNo();
@@ -359,5 +357,20 @@ public class TEGame implements Game {
         for (TECardPlayer player: players) {
             player.setInitBalance(player.getFinalBalance());
         }
+    }
+
+    public void sortPlayersByBalance() {
+        Collections.sort(players, new Comparator<TECardPlayer>() {
+            @Override
+            public int compare(TECardPlayer player1, TECardPlayer player2) {
+                if (player1.getFinalBalance() > player2.getFinalBalance()) {
+                    return 1;
+                } else if (player1.getFinalBalance() < player2.getFinalBalance()) {
+                    return -1;
+                }
+
+                return 0;
+            }
+        });
     }
 }
