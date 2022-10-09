@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -84,7 +85,8 @@ public class TEGame implements Game {
             hitOrStand();
             bankerLastTurn();
 
-//            calculateWinner();
+            List<TECardPlayer> winners = calculateWinner();
+//            settleBets(winners);
 
             setNumOfRounds(getNumOfRounds() + 1);
             System.out.println("Would you like to play another round (Y/N)? ");
@@ -93,6 +95,46 @@ public class TEGame implements Game {
                 continuePlay = false;
             }
         }
+    }
+
+    public List<TECardPlayer> calculateWinner(){
+        List<TECardPlayer> winners = new ArrayList<TECardPlayer>();
+        int bankerCardVal = 0;
+        TECardPlayer bankerPlayer = new TECardPlayer(-1, "None");
+
+        // Case 1: Banker gets natural TE => Banker wins
+        for(TECardPlayer player: players){
+            int playerCardVal = player.getValOfCards();
+            if(player.isBanker()){
+                bankerCardVal = playerCardVal;
+                bankerPlayer = player;
+                if(checkForNaturalTE(player)){
+                    winners.add(player);
+                    return winners;
+                }
+                break;
+            }
+        }
+
+        // Case 2: Players vs banker
+        boolean bankerWinOnly = true;
+        for(TECardPlayer player: players){
+            int playerCardVal = player.getValOfCards();
+            if(!player.isBanker()){
+                if(checkForNaturalTE(player)){
+                    winners.add(player);
+                    bankerWinOnly = false;
+                } else if (playerCardVal > bankerCardVal && !player.isBust()) {
+                    bankerWinOnly = false;
+                    winners.add(player);
+                }
+            }
+        }
+        if(bankerWinOnly){
+            winners.add(bankerPlayer);
+        }
+
+        return winners;
     }
 
     public void checkDeck(){
@@ -169,7 +211,7 @@ public class TEGame implements Game {
     }
 
     public void hitOrStand(){
-        Scanner scn = new Scanner(System.in);
+//        Scanner scn = new Scanner(System.in);
         for(TECardPlayer player: players){
             if(!player.isBanker()){
                 System.out.println(player.getName() + " Hit (Y/N)? ");
