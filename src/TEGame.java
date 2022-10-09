@@ -242,4 +242,26 @@ public class TEGame implements Game {
             }
         }
     }
+
+    public boolean checkForNaturalTE(TECardPlayer player) {
+        boolean isNaturalTE = false;
+        int numAceKQJ = 0;
+
+        List<PlayingCard> playerHand = player.getHand();
+        int playerHandVal = player.getValOfCards();
+
+        if (playerHandVal == 31 && playerHand.size() == 3) {
+            for(PlayingCard card : playerHand) {
+                if (card.getId() == 1 || card.getId() == 11 || card.getId() == 12 || card.getId() == 13) {
+                    numAceKQJ++;
+                }
+            }
+        }
+
+        if (numAceKQJ == 3) {
+            isNaturalTE = true;
+        }
+
+        return isNaturalTE;
+    }
 }
