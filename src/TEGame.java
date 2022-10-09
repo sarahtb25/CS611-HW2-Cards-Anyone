@@ -81,6 +81,7 @@ public class TEGame implements Game {
     public void playGame(){
         boolean continuePlay = true;
         while(continuePlay){
+            updateBalance();
             dealAndPlaceBet();
             hitOrStand();
             bankerLastTurn();
@@ -352,5 +353,11 @@ public class TEGame implements Game {
 
     public void updateHistory() {
 
+    }
+
+    public void updateBalance() {
+        for (TECardPlayer player: players) {
+            player.setInitBalance(player.getFinalBalance());
+        }
     }
 }
