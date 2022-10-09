@@ -393,13 +393,24 @@ public class TEGame implements Game {
     public int setInitialBalance() {
         System.out.println("Please enter how much you would like to be assigned as balance: ");
         Scanner scan = new Scanner(System.in);
-        int balance = scan.nextInt();
+        String balance = scan.next();
 
-        while(balance < 0) {
-            System.out.println("Balance has to be positive!");
-            balance = scan.nextInt();
+        while(!checkIsNumber(balance) || Integer.parseInt(balance) > 0) {
+            System.out.println("Balance has to be positive number!");
+            balance = scan.next();
         }
 
-        return balance;
+        return Integer.parseInt(balance);
+    }
+
+    public boolean checkIsNumber(String val) {
+        int num;
+
+        try {
+            num = Integer.parseInt(val);
+            return true;
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
     }
 }
