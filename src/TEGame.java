@@ -88,8 +88,9 @@ public class TEGame implements Game {
             List<TECardPlayer> winners = calculateWinner();
             settleBets(winners);
             resetBets();
-
+            cardRounds = 0;
             setNumOfRounds(getNumOfRounds() + 1);
+
             System.out.println("Would you like to play another round (Y/N)? ");
             char ch = Utility.checkYesNo();
             if(ch == 'N'){
