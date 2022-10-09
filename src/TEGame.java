@@ -62,7 +62,7 @@ public class TEGame implements Game {
         }
     }
 
-    public String setBankerRandomly() {
+    public TECardPlayer setBankerRandomly() {
         int numPlayers = players.size();
 
         Random rand = new Random();
@@ -74,12 +74,20 @@ public class TEGame implements Game {
 
         players.get(playerId).setBanker(true);
 
-        return players.get(playerId).getName();
+        return players.get(playerId);
     }
 
     public void playGame(){
-//        setInitialBalance(); Assign random banker, ask for a player initial balance
-//        and banker balance = 3 times player balance
+        TECardPlayer banker = setBankerRandomly();
+        int balance = setInitialBalance();
+
+        for (TECardPlayer player : players) {
+            if (player.getPlayerId() != banker.getPlayerId()) {
+                player.setInitBalance(balance);
+            }
+        }
+
+        banker.setInitBalance(3 * balance);
 
         boolean continuePlay = true;
         while(continuePlay){
@@ -380,5 +388,18 @@ public class TEGame implements Game {
 
             return 0;
         });
+    }
+
+    public int setInitialBalance() {
+        System.out.println("Please enter how much you would like to be assigned as balance: ");
+        Scanner scan = new Scanner(System.in);
+        int balance = scan.nextInt();
+
+        while(balance < 0) {
+            System.out.println("Balance has to be positive!");
+            balance = scan.nextInt();
+        }
+
+        return balance;
     }
 }
