@@ -215,7 +215,7 @@ public class TEGame implements Game {
     public void hitOrStand(){
 //        Scanner scn = new Scanner(System.in);
         for(TECardPlayer player: players){
-            if(!player.isBanker()){
+            if(!player.isBanker() && player.isPlayerActive()){
                 System.out.println(player.getName() + " Hit (Y/N)? ");
 
                 char ch = Utility.checkYesNo();
@@ -226,7 +226,6 @@ public class TEGame implements Game {
                 else {
                     player.setStand(true);
                 }
-
             }
         }
     }
@@ -234,7 +233,7 @@ public class TEGame implements Game {
     public void bankerLastTurn(){
 
         for(TECardPlayer player: players){
-            if(player.isBanker()){
+            if(player.isBanker() && player.isPlayerActive()){
                 player.faceAllCardsUp();
                 boolean takeHitFlag = true;
 

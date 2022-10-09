@@ -25,7 +25,7 @@ public class TECardPlayer extends Player {
     }
 
     public boolean isPlayerActive(){
-        return (!isBroke() && !isBust() && !isFold());
+        return (!isBroke() && !isBust() && !isFold() && getInitBalance() > 0);
     }
 
     public boolean isBanker() {
