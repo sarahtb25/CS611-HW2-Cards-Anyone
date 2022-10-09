@@ -364,9 +364,9 @@ public class TEGame implements Game {
             @Override
             public int compare(TECardPlayer player1, TECardPlayer player2) {
                 if (player1.getFinalBalance() > player2.getFinalBalance()) {
-                    return 1;
-                } else if (player1.getFinalBalance() < player2.getFinalBalance()) {
                     return -1;
+                } else if (player1.getFinalBalance() < player2.getFinalBalance()) {
+                    return 1;
                 }
 
                 return 0;
