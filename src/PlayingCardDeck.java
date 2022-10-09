@@ -21,6 +21,10 @@ public class PlayingCardDeck {
         cardDeck = new ArrayList<PlayingCard>();
     }
 
+    public int deckSize(){
+        return cardDeck.size();
+    }
+
     public void setNumDeck(int numDeck) {
         this.numDeck = numDeck;
     }
