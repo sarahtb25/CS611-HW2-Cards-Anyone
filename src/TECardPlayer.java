@@ -8,6 +8,8 @@ public class TECardPlayer extends Player {
     private int valOfCards;
     private char currentStatus;
     private boolean isBust;
+    private boolean isFold;
+    private boolean isStand;
     private List<PlayingCard> hand;
 
     public TECardPlayer(int id, String name) {
@@ -22,12 +24,24 @@ public class TECardPlayer extends Player {
         }
     }
 
+    public boolean isPlayerActive(){
+        return (!isBroke() && !isBust() && !isFold());
+    }
+
     public boolean isBanker() {
         return isBanker;
     }
 
     public void setBanker(boolean banker) {
         isBanker = banker;
+    }
+
+    public boolean isFold() {
+        return isFold;
+    }
+
+    public void setFold(boolean fold) {
+        isFold = fold;
     }
 
     public int getBet() {
@@ -78,20 +92,26 @@ public class TECardPlayer extends Player {
         isBust = bust;
     }
 
+    public boolean isStand() {
+        return isStand;
+    }
+
+    public void setStand(boolean stand) {
+        isStand = stand;
+    }
+
     public void clearPlayingCards() {
         hand.clear();
     }
 
     public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
         card.setIsFaceDown(isFaceDown);
-        valOfCards += card.getValue();
         hand.add(card);
 
         if (valOfCards > 31 && !isBust()) {
             setBust(true);
         }
     }
-
     public List<PlayingCard> getHand() {
         return hand;
     }
