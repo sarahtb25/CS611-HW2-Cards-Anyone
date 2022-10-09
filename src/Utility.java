@@ -5,7 +5,7 @@ public class Utility {
         Scanner scn = new Scanner(System.in);
         char ch = scn.next().charAt(0);
         while (ch != 'Y' && ch != 'y' && ch != 'N' && ch != 'n') {
-            System.out.println("Wrong input!! Enter again");
+            System.out.println("Invalid response. Please enter Y/y or N/n.");
             ch = scn.next().charAt(0);
         }
         if(ch == 'Y' || ch == 'y')
