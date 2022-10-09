@@ -106,7 +106,8 @@ public class TECardPlayer extends Player {
 
     public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
         card.setIsFaceDown(isFaceDown);
-        valOfCards += card.getValue();
+        int cardValue = getValOfCards();
+        setValOfCards(cardValue + card.getValue());
         hand.add(card);
 
         if (valOfCards > 31 && !isBust()) {
