@@ -103,17 +103,42 @@ public class TECardPlayer extends Player {
     public void clearPlayingCards() {
         hand.clear();
     }
-
-    public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
-        card.setIsFaceDown(isFaceDown);
-        int cardValue = getValOfCards();
-        setValOfCards(cardValue + card.getValue());
-        hand.add(card);
-
-        if (valOfCards > 31 && !isBust()) {
-            setBust(true);
+    public void faceAllCardsUp(){
+        for(PlayingCard card: hand){
+            card.setIsFaceDown(false);
         }
     }
+    public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
+        card.setIsFaceDown(isFaceDown);
+        checkAceLogic(card);
+        int totalHandValue = getValOfCards();
+        setValOfCards(totalHandValue + card.getValue());
+        hand.add(card);
+
+        if (getValOfCards() > 31 && !isBust()) {
+            setBust(true);
+            System.out.println("Sorry!! " + getName() + " you have gone bust.");
+        }
+    }
+
+    public void checkAceLogic(PlayingCard card){
+        boolean cardWithVal1 = false;
+        if(card.getId() == 1){
+            for(PlayingCard inHandCard: hand){
+                if(inHandCard.getValue() == 1){
+                    cardWithVal1 = true;
+                }
+            }
+            if(!cardWithVal1){
+                System.out.println("Do you want value of this Ace to be 1 (Y/N)?");
+                char ch = Utility.checkYesNo();
+                if(ch == 'Y'){
+                    card.setValueGivenVal(1);
+                }
+            }
+        }
+    }
+
     public List<PlayingCard> getHand() {
         return hand;
     }

@@ -2,13 +2,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class TETable implements Table{
+public class TEGame implements Game {
     private List<TECardPlayer> players;
     private PlayingCardDeck cards;
     private int numOfRounds;    // Number of games played
     private int cardRounds;      // There can be multiple card rounds in one round of game
 
-    TETable(){
+    TEGame(){
         cards = new TEPlayingCardDeck();
         numOfRounds = 0;
         cardRounds = 0;
@@ -108,7 +108,7 @@ public class TETable implements Table{
 //            cards.resetDeck();
 //            clearPlayerCards();
 //        }
-        if(numOfRounds == 0){
+        if(cardRounds == 0){
             // Dealer deals 1 card facedown to each player, dealer gets 1 faceup card
             for(TECardPlayer player: players){
                 if(player.isPlayerActive()) {
@@ -122,7 +122,7 @@ public class TETable implements Table{
                 }
             }
         }
-        else if(numOfRounds == 1){
+        else if(cardRounds == 1){
             // Dealer deals 2 cards faceup to each player
             for(TECardPlayer player: players){
                 if(player.isPlayerActive()) {
@@ -136,6 +136,7 @@ public class TETable implements Table{
 
     public void dealAndPlaceBet(){
         dealCards();    // Deal 1st round of cards
+        setCardRounds(getCardRounds() + 1);
         System.out.println("Its time to place your bets");
         Scanner scn = new Scanner(System.in);
 
@@ -162,15 +163,60 @@ public class TETable implements Table{
                 }
             }
         }
+
         dealCards();
+        setCardRounds(getCardRounds() + 1);
     }
 
     public void hitOrStand(){
         Scanner scn = new Scanner(System.in);
         for(TECardPlayer player: players){
             if(!player.isBanker()){
-                takeHit(player);
+                System.out.println(player.getName() + " Hit (Y/N)? ");
+
+                char ch = Utility.checkYesNo();
+                if (ch == 'Y') {
+                    checkDeck();
+                    player.addPlayingCardToHand(cards.drawCard(), false);
+                }
+                else {
+                    player.setStand(true);
+                }
+
             }
+        }
+    }
+
+    public void bankerLastTurn(){
+
+        for(TECardPlayer player: players){
+            if(player.isBanker()){
+                player.faceAllCardsUp();
+                boolean takeHitFlag = true;
+
+                while(takeHitFlag) {
+                    checkDeck();
+                    player.addPlayingCardToHand(cards.drawCard(), false);
+
+                    if(player.getValOfCards() >= 27){
+                        takeHitFlag = false;
+                    }
+                    else{
+                        System.out.println("Taking a Hit again ");
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public void displayTurn(){
+
+    }
+
+    public void clearPlayerCards() {
+        for (TECardPlayer player : players) {
+            player.clearPlayingCards();
         }
     }
 
@@ -194,24 +240,6 @@ public class TETable implements Table{
                 takeHitFlag = false;
                 player.setStand(true);
             }
-        }
-    }
-
-    public void bankerLastTurn(){
-        for(TECardPlayer player: players){
-            if(player.isBanker()){
-                takeHit(player);
-            }
-        }
-    }
-
-    public void displayTurn(){
-
-    }
-
-    public void clearPlayerCards() {
-        for (TECardPlayer player : players) {
-            player.clearPlayingCards();
         }
     }
 }
