@@ -5,9 +5,11 @@ public class TEGame implements Game {
     private PlayingCardDeck cards;
     private int numOfRounds;    // Number of games played
     private int cardRounds;      // There can be multiple card rounds in one round of game
+    private Statistics gameStats;
 
     TEGame(){
         cards = new TEPlayingCardDeck();
+        gameStats = new Statistics();
         numOfRounds = 0;
         cardRounds = 0;
     }
@@ -76,6 +78,9 @@ public class TEGame implements Game {
     }
 
     public void playGame(){
+//        setInitialBalance(); Assign random banker, ask for a player initial balance
+//        and banker balance = 3 times player balance
+
         boolean continuePlay = true;
         while(continuePlay){
             updateBalance();
@@ -89,6 +94,12 @@ public class TEGame implements Game {
             cardRounds = 0;
             setNumOfRounds(getNumOfRounds() + 1);
             sortPlayersByBalance();
+
+            RoundHistory gameRound = new RoundHistory();
+            for(TECardPlayer player: players){
+                gameRound.add(player);
+            }
+            gameStats.add(gameRound);
 
             System.out.println("Would you like to play another round (Y/N)? ");
             char ch = Utility.checkYesNo();
@@ -360,17 +371,14 @@ public class TEGame implements Game {
     }
 
     public void sortPlayersByBalance() {
-        Collections.sort(players, new Comparator<TECardPlayer>() {
-            @Override
-            public int compare(TECardPlayer player1, TECardPlayer player2) {
-                if (player1.getFinalBalance() > player2.getFinalBalance()) {
-                    return 1;
-                } else if (player1.getFinalBalance() < player2.getFinalBalance()) {
-                    return -1;
-                }
-
-                return 0;
+        Collections.sort(players, (player1, player2) -> {
+            if (player1.getFinalBalance() > player2.getFinalBalance()) {
+                return 1;
+            } else if (player1.getFinalBalance() < player2.getFinalBalance()) {
+                return -1;
             }
+
+            return 0;
         });
     }
 }
