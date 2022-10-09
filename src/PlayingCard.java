@@ -38,6 +38,10 @@ public class PlayingCard extends Piece {
         }
     }
 
+    public void setValueGivenVal(int value) { // For Ace, can be 1 or 11
+        this.value = value;
+    }
+
     public int getValue() {
         return value;
     }
