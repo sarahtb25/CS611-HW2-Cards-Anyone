@@ -80,50 +80,133 @@ public class TETable implements Table{
     public void playGame(){
         boolean continuePlay = true;
         while(continuePlay){
+            dealAndPlaceBet();
+            hitOrStand();
+            bankerLastTurn();
 
+//            calculateWinner();
 
             setNumOfRounds(getNumOfRounds() + 1);
             System.out.println("Would you like to play another round (Y/N)? ");
-            Scanner scn = new Scanner(System.in);
-            char ch = scn.next().charAt(0);
-            while(ch != 'Y' && ch != 'y' && ch != 'N' && ch != 'n'){
-                System.out.println("Wrong input!! Enter again");
-                ch = scn.next().charAt(0);
-            }
-            if(ch == 'N' || ch == 'n'){
+            char ch = Utility.checkYesNo();
+            if(ch == 'N'){
                 continuePlay = false;
             }
-//            Ask whethere you want to play another round
+        }
+    }
+
+    public void checkDeck(){
+        if(cards.deckSize() < 2 ){
+            cards = new TEPlayingCardDeck();
+//            cards.resetDeck();
+            clearPlayerCards();
         }
     }
 
     public void dealCards(){
+//        if(cards.deckSize() < 2 ){
+//            cards.resetDeck();
+//            clearPlayerCards();
+//        }
         if(numOfRounds == 0){
             // Dealer deals 1 card facedown to each player, dealer gets 1 faceup card
             for(TECardPlayer player: players){
-                if(player.isBanker()){
-                    player.addPlayingCardToHand(cards.drawCard(), false);
-                }
-                else {
-                    player.addPlayingCardToHand(cards.drawCard(), true);
+                if(player.isPlayerActive()) {
+                    if (player.isBanker()) {
+                        checkDeck();
+                        player.addPlayingCardToHand(cards.drawCard(), false);
+                    } else {
+                        checkDeck();
+                        player.addPlayingCardToHand(cards.drawCard(), true);
+                    }
                 }
             }
         }
         else if(numOfRounds == 1){
             // Dealer deals 2 cards faceup to each player
             for(TECardPlayer player: players){
-                player.addPlayingCardToHand(cards.drawCard(), false);
-                player.addPlayingCardToHand(cards.drawCard(), false);
+                if(player.isPlayerActive()) {
+                    checkDeck();
+                    player.addPlayingCardToHand(cards.drawCard(), false);
+                    player.addPlayingCardToHand(cards.drawCard(), false);
+                }
             }
         }
     }
 
-    public void playRound(){
-        dealCards();
+    public void dealAndPlaceBet(){
+        dealCards();    // Deal 1st round of cards
         System.out.println("Its time to place your bets");
-        for(TECardPlayer player: players){
-            System.out.println("Place your bets please");
+        Scanner scn = new Scanner(System.in);
+
+        for(TECardPlayer player: players) {
+            if (player.isPlayerActive()) {
+                // showTable(); display cards of all the players and his own card. To help the player place a bet
+
+                System.out.println("Would you like to place a bet (Y/N)? ");
+                char ch = Utility.checkYesNo();
+
+                if (ch == 'Y' || ch == 'y') {
+                    System.out.println("Your current balance: " + player.getInitBalance());
+                    System.out.println(player.getName() + " place your bets please: ");
+
+                    int bet = scn.nextInt();
+                    while (bet > player.getInitBalance()) {
+                        System.out.println("Can't place more than you own !! Try again");
+                        System.out.println(player.getName() + " place your bets please: ");
+                        bet = scn.nextInt();
+                    }
+                    player.setBet(bet);
+                } else {
+                    player.setFold(true);
+                }
+            }
         }
+        dealCards();
+    }
+
+    public void hitOrStand(){
+        Scanner scn = new Scanner(System.in);
+        for(TECardPlayer player: players){
+            if(!player.isBanker()){
+                takeHit(player);
+            }
+        }
+    }
+
+    public void takeHit(TECardPlayer player){
+        boolean takeHitFlag = true;
+        System.out.println(player.getName() + " Hit (Y/N)? ");
+        while(takeHitFlag) {
+            char ch = Utility.checkYesNo();
+            if (ch == 'Y') {
+                checkDeck();
+                player.addPlayingCardToHand(cards.drawCard(), false);
+
+                if(player.isBust()){
+                    takeHitFlag = false;
+                }
+                else{
+                    System.out.println(player.getName() + " Hit again (Y/N)? ");
+                }
+            }
+            else {
+                takeHitFlag = false;
+                player.setStand(true);
+            }
+        }
+    }
+
+    public void bankerLastTurn(){
+        for(TECardPlayer player: players){
+            if(player.isBanker()){
+                takeHit(player);
+            }
+        }
+    }
+
+    public void displayTurn(){
+
     }
 
     public void clearPlayerCards() {
