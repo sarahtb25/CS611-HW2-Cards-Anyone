@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class TEGame implements Game {
-    private List<TECardPlayer> players;
+    private List<TECardPlayer> players = new ArrayList<TECardPlayer>();
     private PlayingCardDeck cards;
     private int numOfRounds;    // Number of games played
     private int cardRounds;      // There can be multiple card rounds in one round of game
@@ -47,18 +47,22 @@ public class TEGame implements Game {
     }
 
     public void initializePlayers(){
-        System.out.println("Enter total number of players playing the game: ");
+        System.out.println("Please enter total number of players playing the game (min. 3 and max. 10): ");
         Scanner scn = new Scanner(System.in);
 
-        int totalPlayers = scn.nextInt();
-        scn.nextLine();
+        String totalPlayersValue = scn.next();
+
+        while(!checkIsNumber(totalPlayersValue) || Integer.parseInt(totalPlayersValue) > 10 || Integer.parseInt(totalPlayersValue) < 3) {
+            System.out.println("Please enter total number of players playing the game (min. 3 and max. 10): ");
+            totalPlayersValue = scn.next();
+        }
+
+        int totalPlayers = Integer.parseInt(totalPlayersValue);
 
         for(int i = 0; i < totalPlayers; i++){
             System.out.println("Enter player " + (i+1) + " name: ");
-            String name = scn.nextLine();
+            String name = scn.next();
             players.add(new TECardPlayer(i, name));
-
-            scn.nextLine();
         }
     }
 
