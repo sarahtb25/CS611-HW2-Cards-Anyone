@@ -7,7 +7,7 @@ public class TEPlayingCardDeck extends PlayingCardDeck {
         super(numDeck);
     }
 
-    public void createTEPlayingCardDeck(int numDeck) {
+    public void createTEPlayingCardDeck() {
         createCardDecks(numDeck);
     }
 

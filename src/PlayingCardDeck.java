@@ -7,18 +7,13 @@ public class PlayingCardDeck {
     private final int numCardsPerSuit = 13; // Number of cards in a suit
     private final char[] suits = {'H', 'D', 'S', 'C'};
 
-    private List<PlayingCard> cardDeck;
+    private List<PlayingCard> cardDeck = new ArrayList<PlayingCard>();
     private int numDeck;
 
     PlayingCardDeck(int numDeck) {
         setNumDeck(numDeck);
-        initPlayingCardDeck();
         createCardDecks(numDeck);
         shufflePlayingCards();
-    }
-
-    public void initPlayingCardDeck() {
-        cardDeck = new ArrayList<PlayingCard>();
     }
 
     public int deckSize(){

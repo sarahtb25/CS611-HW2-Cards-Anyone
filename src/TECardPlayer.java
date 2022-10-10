@@ -117,7 +117,7 @@ public class TECardPlayer extends Player {
 
         if (getValOfCards() > 31 && !isBust()) {
             setBust(true);
-            System.out.println("Sorry!! " + getName() + " you have gone bust.");
+            System.out.println("Sorry " + getName() + ", you have gone bust with a value of " + getValOfCards() + ".");
         }
     }
 

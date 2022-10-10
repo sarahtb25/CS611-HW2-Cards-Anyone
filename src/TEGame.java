@@ -2,13 +2,15 @@ import java.util.*;
 
 public class TEGame implements Game {
     private List<TECardPlayer> players = new ArrayList<TECardPlayer>();
-    private PlayingCardDeck cards;
+    private TEPlayingCardDeck cards;
     private int numOfRounds;    // Number of games played
     private int cardRounds;      // There can be multiple card rounds in one round of game
     private Statistics gameStats;
 
     TEGame(){
         cards = new TEPlayingCardDeck();
+        cards.createTEPlayingCardDeck();
+        cards.shuffleTEPlayingCards();
         gameStats = new Statistics();
         numOfRounds = 0;
         cardRounds = 0;
@@ -34,7 +36,7 @@ public class TEGame implements Game {
         this.players = players;
     }
 
-    public void setCards(PlayingCardDeck cards) {
+    public void setCards(TEPlayingCardDeck cards) {
         this.cards = cards;
     }
 
@@ -67,6 +69,7 @@ public class TEGame implements Game {
     }
 
     public TECardPlayer setBankerRandomly() {
+        System.out.println("Assigning a banker randomly...");
         int numPlayers = players.size();
 
         Random rand = new Random();
@@ -81,17 +84,20 @@ public class TEGame implements Game {
         return players.get(playerId);
     }
 
-    public void playGame(){
-        TECardPlayer banker = setBankerRandomly();
+    public void playGame() {
         int balance = setInitialBalance();
 
         for (TECardPlayer player : players) {
-            if (player.getPlayerId() != banker.getPlayerId()) {
-                player.setInitBalance(balance);
-            }
+            player.setInitBalance(balance);
+            player.setFinalBalance(balance);
         }
 
+        System.out.println(balance);
+        TECardPlayer banker = setBankerRandomly();
+        System.out.println("Banker " + banker.getName());
+
         banker.setInitBalance(3 * balance);
+        banker.setFinalBalance(3 * balance);
 
         boolean continuePlay = true;
         while(continuePlay){
@@ -201,20 +207,17 @@ public class TEGame implements Game {
     }
 
     public void dealCards(){
-//        if(cards.deckSize() < 2 ){
-//            cards.resetDeck();
-//            clearPlayerCards();
-//        }
+        System.out.println(cards.drawTEPlayingCard().getId());
         if(cardRounds == 0){
-            // Dealer deals 1 card facedown to each player, dealer gets 1 faceup card
+            // Dealer deals 1 card face down to each player, dealer gets 1 face up card
             for(TECardPlayer player: players){
                 if(player.isPlayerActive()) {
                     if (player.isBanker()) {
                         checkDeck();
-                        player.addPlayingCardToHand(cards.drawCard(), false);
+                        player.addPlayingCardToHand(cards.drawTEPlayingCard(), false);
                     } else {
                         checkDeck();
-                        player.addPlayingCardToHand(cards.drawCard(), true);
+                        player.addPlayingCardToHand(cards.drawTEPlayingCard(), true);
                     }
                 }
             }
@@ -430,8 +433,8 @@ public class TEGame implements Game {
         Scanner scan = new Scanner(System.in);
         String balance = scan.next();
 
-        while(!checkIsNumber(balance) || Integer.parseInt(balance) > 0) {
-            System.out.println("Balance has to be positive number!");
+        while(!checkIsNumber(balance) || Integer.parseInt(balance) <= 0) {
+            System.out.println("Balance has to be a positive number!");
             balance = scan.next();
         }
 
