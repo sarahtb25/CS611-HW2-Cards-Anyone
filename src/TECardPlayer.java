@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class TECardPlayer extends Player {
@@ -14,6 +15,7 @@ public class TECardPlayer extends Player {
 
     public TECardPlayer(int id, String name) {
         super(id, name);
+        hand = new ArrayList<PlayingCard>();
     }
 
     public boolean isBroke() {
@@ -141,5 +143,13 @@ public class TECardPlayer extends Player {
 
     public List<PlayingCard> getHand() {
         return hand;
+    }
+
+    public void showCards() {
+        int size = hand.size();
+        for(int i = 0; i < size - 1; i++){
+            System.out.print(hand.get(i).printCard() + ", ");
+        }
+        System.out.print(hand.get(size -1).printCard());
     }
 }

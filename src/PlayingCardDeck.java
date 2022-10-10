@@ -29,6 +29,7 @@ public class PlayingCardDeck {
         for (int i = 0; i < numDeck; i++) {
             for (int j = 0; j < numSuits; j++) {
                 for (int k = 0; k < numCardsPerSuit; k++) {
+//                    System.out.println(String.valueOf(suits[j]));
                     cardDeck.add(new PlayingCard(k + 1, suits[j], true)); // Cards always facing down
                 }
             }

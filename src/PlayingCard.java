@@ -1,7 +1,6 @@
 public class PlayingCard extends Piece {
     private int value;
     private boolean isFaceDown = false;
-    private int id;
     private char suit;
 
     PlayingCard(int id, char suit, boolean isFaceDown) {
@@ -46,13 +45,13 @@ public class PlayingCard extends Piece {
         return value;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public char getSuit() {
         return suit;
@@ -72,6 +71,16 @@ public class PlayingCard extends Piece {
 
     @Override
     public String toString() {
-        return getSuit() + " " + getPlayingCardChar(id);
+        return getSuit() + " " + getPlayingCardChar(getId());
+    }
+
+    public String printCard() {
+//        System.out.print(String.valueOf(getSuit()));
+//        System.out.print("-");
+//        System.out.print(getDisplayChar());
+        char ch = (char) getId();
+        System.out.print(String.valueOf(ch));
+        String str = String.valueOf(getType() + "-" );
+        return str;
     }
 }

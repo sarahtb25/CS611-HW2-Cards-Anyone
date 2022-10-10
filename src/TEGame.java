@@ -49,20 +49,20 @@ public class TEGame implements Game {
     }
 
     public void initializePlayers(){
-        System.out.println("Please enter total number of players playing the game (min. 3 and max. 10): ");
+        System.out.print("Please enter total number of players playing the game (min. 3 and max. 10): ");
         Scanner scn = new Scanner(System.in);
 
         String totalPlayersValue = scn.next();
 
         while(!checkIsNumber(totalPlayersValue) || Integer.parseInt(totalPlayersValue) > 10 || Integer.parseInt(totalPlayersValue) < 3) {
-            System.out.println("Please enter total number of players playing the game (min. 3 and max. 10): ");
+            System.out.print("Please enter total number of players playing the game (min. 3 and max. 10): ");
             totalPlayersValue = scn.next();
         }
 
         int totalPlayers = Integer.parseInt(totalPlayersValue);
 
         for(int i = 0; i < totalPlayers; i++){
-            System.out.println("Enter player " + (i+1) + " name: ");
+            System.out.print("Enter player " + (i+1) + " name: ");
             String name = scn.next();
             players.add(new TECardPlayer(i, name));
         }
@@ -89,29 +89,11 @@ public class TEGame implements Game {
         Utility.nextLine();
 
         System.out.println("Players: ");
-
-        int columnLen = 4;
-        int i = 0, j = 0;
-        while(j < players.size() - 1) {
-            i = 0;
-            while (i < columnLen) {
-                TECardPlayer player = players.get(i);
-                if (!player.isBanker()) {
-                    System.out.print(player.getName() + "\t");
-                }
-                i++;
+        for(TECardPlayer player: players){
+            if(!player.isBanker()) {
+                System.out.print(player.getName() + "\t Balance: " + player.getInitBalance());
+                Utility.nextLine();
             }
-            Utility.nextLine();
-            i = 0;
-            while (i < columnLen) {
-                TECardPlayer player = players.get(i);
-                if (!player.isBanker()) {
-                    System.out.print(player.getInitBalance() + "\t");
-                }
-                i++;
-                j++;
-            }
-            Utility.nextLine();
         }
     }
 
@@ -124,9 +106,9 @@ public class TEGame implements Game {
             player.setFinalBalance(balance);
         }
 
-        System.out.println(balance);
         TECardPlayer banker = setBankerRandomly();
-        System.out.println("Banker " + banker.getName());
+//        System.out.println("Banker is " + banker.getName());
+        Utility.nextLine();
 
         banker.setInitBalance(3 * balance);
         banker.setFinalBalance(3 * balance);
@@ -242,7 +224,6 @@ public class TEGame implements Game {
     }
 
     public void dealCards(){
-        System.out.println(cards.drawTEPlayingCard().getId());
         if(cardRounds == 0){
             // Dealer deals 1 card face down to each player, dealer gets 1 face up card
             for(TECardPlayer player: players){
@@ -272,14 +253,15 @@ public class TEGame implements Game {
     public void dealAndPlaceBet(){
         dealCards();    // Deal 1st round of cards
         setCardRounds(getCardRounds() + 1);
-        System.out.println("Its time to place your bets");
+        System.out.println("Its time to place bets");
         Scanner scn = new Scanner(System.in);
 
         for(TECardPlayer player: players) {
             if (player.isPlayerActive()) {
-                // showTable(); display cards of all the players and his own card. To help the player place a bet
-
-                System.out.println("Would you like to place a bet (Y/N)? ");
+                 showTable(player);
+//                 display cards of all the players and his own card. To help the player place a bet
+                System.out.print(player.getName());
+                System.out.print(" Would you like to place a bet (Y/N)? ");
                 char ch = Utility.checkYesNo();
 
                 if (ch == 'Y' || ch == 'y') {
@@ -301,6 +283,22 @@ public class TEGame implements Game {
 
         dealCards();
         setCardRounds(getCardRounds() + 1);
+    }
+
+    public void showTable(TECardPlayer currentPlayer){
+        for(TECardPlayer player: players){
+            if(player.getPlayerId() != currentPlayer.getPlayerId()) {
+                if (player.isBanker()) {
+                    System.out.print("B-");
+                }
+                System.out.println(player.getName());
+                player.showCards();
+                Utility.nextLine();
+            }
+        }
+        System.out.println("Your cards: ");
+        currentPlayer.showCards();
+        Utility.nextLine();
     }
 
     public void hitOrStand(){
