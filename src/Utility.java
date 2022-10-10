@@ -13,5 +13,7 @@ public class Utility {
         else
             return 'N';
     }
-
+    public static void nextLine(){
+        System.out.println();
+    }
 }

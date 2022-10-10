@@ -83,10 +83,42 @@ public class TEGame implements Game {
 
         return players.get(playerId);
     }
+    public void printPlayers(TECardPlayer banker){
+        System.out.println("Here's the player information: ");
+        System.out.println("Banker: " + banker.getName() + "\t" + "Balance: " + banker.getInitBalance());
+        Utility.nextLine();
+
+        System.out.println("Players: ");
+
+        int columnLen = 4;
+        int i = 0, j = 0;
+        while(j < players.size() - 1) {
+            i = 0;
+            while (i < columnLen) {
+                TECardPlayer player = players.get(i);
+                if (!player.isBanker()) {
+                    System.out.print(player.getName() + "\t");
+                }
+                i++;
+            }
+            Utility.nextLine();
+            i = 0;
+            while (i < columnLen) {
+                TECardPlayer player = players.get(i);
+                if (!player.isBanker()) {
+                    System.out.print(player.getInitBalance() + "\t");
+                }
+                i++;
+                j++;
+            }
+            Utility.nextLine();
+        }
+    }
 
     public void playGame() {
         int balance = setInitialBalance();
 
+        // Set player balance according to input and banker balance is 3 times
         for (TECardPlayer player : players) {
             player.setInitBalance(balance);
             player.setFinalBalance(balance);
@@ -101,6 +133,9 @@ public class TEGame implements Game {
 
         boolean continuePlay = true;
         while(continuePlay){
+            printPlayers(banker);
+            Utility.nextLine();
+
             updateBalance();
             dealAndPlaceBet();
             hitOrStand();
@@ -404,10 +439,6 @@ public class TEGame implements Game {
         for (TECardPlayer player: players) {
             player.setBet(0);
         }
-    }
-
-    public void updateHistory() {
-
     }
 
     public void updateBalance() {
