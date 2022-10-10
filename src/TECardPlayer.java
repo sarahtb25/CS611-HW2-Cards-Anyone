@@ -17,7 +17,7 @@ public class TECardPlayer extends Player {
     }
 
     public boolean isBroke() {
-        if (finalBalance > 0) {
+        if (getFinalBalance() > 0) {
             return false;
         } else {
             return true;

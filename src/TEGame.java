@@ -102,6 +102,7 @@ public class TEGame implements Game {
             cardRounds = 0;
             setNumOfRounds(getNumOfRounds() + 1);
             sortPlayersByBalance();
+            pickNextBanker();
 
             RoundHistory gameRound = new RoundHistory();
             for(TECardPlayer player: players){
@@ -113,6 +114,36 @@ public class TEGame implements Game {
             char ch = Utility.checkYesNo();
             if(ch == 'N'){
                 continuePlay = false;
+            }
+        }
+    }
+
+    public void pickNextBanker(){
+        removeExistingBanker();
+        boolean bankerFound = false;
+        int i = 0;
+
+        while(!bankerFound){
+            System.out.println(players.get(i) + " would you like to be the banker in next round (Y/N)?");
+            char ch = Utility.checkYesNo();
+            if(ch == 'Y'){
+                bankerFound = true;
+                System.out.println("For the next round " + players.get(i).getName() +
+                        " will be the banker");
+
+            }
+            i++;
+        }
+        if(!bankerFound){
+            TECardPlayer player = setBankerRandomly();
+        }
+    }
+
+    public void removeExistingBanker(){
+        for(TECardPlayer player: players){
+            if(player.isBanker()){
+                player.setBanker(false);
+                break;
             }
         }
     }
