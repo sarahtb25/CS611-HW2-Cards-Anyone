@@ -257,10 +257,10 @@ public class TEGame implements Game {
         Scanner scn = new Scanner(System.in);
 
         for(TECardPlayer player: players) {
-            if (player.isPlayerActive()) {
-                 showTable(player);
+            if (player.isPlayerActive() && !player.isBanker()) {
+                showTable(player);
 //                 display cards of all the players and his own card. To help the player place a bet
-                System.out.print(player.getName());
+                System.out.println(player.getName());
                 System.out.print(" Would you like to place a bet (Y/N)? ");
                 char ch = Utility.checkYesNo();
 
@@ -289,15 +289,17 @@ public class TEGame implements Game {
         for(TECardPlayer player: players){
             if(player.getPlayerId() != currentPlayer.getPlayerId()) {
                 if (player.isBanker()) {
-                    System.out.print("B-");
+                    System.out.print("Banker: ");
                 }
                 System.out.println(player.getName());
                 player.showCards();
                 Utility.nextLine();
+                Utility.nextLine();
             }
         }
-        System.out.println("Your cards: ");
+        System.out.println("Your (" + currentPlayer.getName() + ") cards: ");
         currentPlayer.showCards();
+        System.out.println("Current Value of Hand: " + currentPlayer.getValOfCards());
         Utility.nextLine();
     }
 

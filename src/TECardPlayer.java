@@ -136,6 +136,8 @@ public class TECardPlayer extends Player {
                 char ch = Utility.checkYesNo();
                 if(ch == 'Y'){
                     card.setValueGivenVal(1);
+                } else {
+                    card.setValueGivenVal(11);
                 }
             }
         }
@@ -151,5 +153,6 @@ public class TECardPlayer extends Player {
             System.out.print(hand.get(i).printCard() + ", ");
         }
         System.out.print(hand.get(size -1).printCard());
+        Utility.nextLine();
     }
 }

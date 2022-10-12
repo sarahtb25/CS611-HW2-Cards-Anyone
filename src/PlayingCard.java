@@ -13,7 +13,7 @@ public class PlayingCard extends Piece {
         char displayChar = 'N';
 
         if (id >= 2 && id <= 10) {
-            displayChar = (char) id;
+            displayChar = (char) (id + '0');
         } else if (id == 1) {
             displayChar = 'A';
         } else if (id == 11) {
@@ -69,14 +69,13 @@ public class PlayingCard extends Piece {
         return isFaceDown;
     }
 
-    @Override
-    public String toString() {
-        return getSuit() + " " + getPlayingCardChar(getId());
-    }
+//    @Override
+//    public String toString() {
+//        return getSuit() + " " + getPlayingCardChar(getId());
+//    }
 
     public String printCard() {
-        String id = String.valueOf(getId());
-        String str = String.valueOf(getType()) + "-" + id;
+        String str = String.valueOf(getType()) + "-" + String.valueOf(getPlayingCardChar(getId()));
         return str;
     }
 }
