@@ -260,8 +260,8 @@ public class TEGame implements Game {
             if (player.isPlayerActive() && !player.isBanker()) {
                 showTable(player);
 //                 display cards of all the players and his own card. To help the player place a bet
-                System.out.println(player.getName());
-                System.out.print(" Would you like to place a bet (Y/N)? ");
+                System.out.print(player.getName());
+                System.out.print(" would you like to place a bet (Y/N)? ");
                 char ch = Utility.checkYesNo();
 
                 if (ch == 'Y' || ch == 'y') {
@@ -298,8 +298,8 @@ public class TEGame implements Game {
             }
         }
         System.out.println("Your (" + currentPlayer.getName() + ") cards: ");
-        currentPlayer.showCards();
-        System.out.println("Current Value of Hand: " + currentPlayer.getValOfCards());
+        currentPlayer.showMyCards();
+        System.out.println("Current value of Hand: " + currentPlayer.getValOfCards());
         Utility.nextLine();
     }
 

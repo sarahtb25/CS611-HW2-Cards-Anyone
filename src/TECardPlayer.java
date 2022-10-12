@@ -150,9 +150,26 @@ public class TECardPlayer extends Player {
     public void showCards() {
         int size = hand.size();
         for(int i = 0; i < size - 1; i++){
+            if(!hand.get(i).getIsFaceDown()) {
+                System.out.print(hand.get(i).printCard() + ", ");
+            }
+            else{
+                System.out.print("*-*" + ", ");
+            }
+        }
+        if(!hand.get(size -1).getIsFaceDown())
+            System.out.print(hand.get(size -1).printCard());
+        else{
+            System.out.print("*-*" + ", ");
+        }
+    }
+    public void showMyCards() {
+        int size = hand.size();
+        for(int i = 0; i < size - 1; i++){
             System.out.print(hand.get(i).printCard() + ", ");
         }
         System.out.print(hand.get(size -1).printCard());
+        Utility.nextLine();
         Utility.nextLine();
     }
 }
