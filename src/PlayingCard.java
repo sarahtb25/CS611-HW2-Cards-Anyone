@@ -75,12 +75,8 @@ public class PlayingCard extends Piece {
     }
 
     public String printCard() {
-//        System.out.print(String.valueOf(getSuit()));
-//        System.out.print("-");
-//        System.out.print(getDisplayChar());
-        char ch = (char) getId();
-        System.out.print(String.valueOf(ch));
-        String str = String.valueOf(getType() + "-" );
+        String id = String.valueOf(getId());
+        String str = String.valueOf(getType()) + "-" + id;
         return str;
     }
 }
