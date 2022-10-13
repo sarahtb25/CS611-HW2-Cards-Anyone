@@ -17,7 +17,10 @@ public class TECardPlayer extends Player {
         super(id, name);
         hand = new ArrayList<PlayingCard>();
     }
-
+    public TECardPlayer() {
+        super(1, "name");
+        hand = new ArrayList<PlayingCard>();
+    }
     public boolean isBroke() {
         if (getFinalBalance() > 0) {
             return false;
