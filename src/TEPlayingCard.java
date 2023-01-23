@@ -1,21 +1,22 @@
 public class TEPlayingCard extends PlayingCard {
+    // TEPlayingCard is a specific type of playing card created for Trianta Ena game
+    // Each card game can assign different value to a card depending on the game
+    // Therefore this class contains an additional method to set value of a playing card
+        // according to TE game
 
     TEPlayingCard(int id, char suit, boolean isFaceDown) {
         super(id, suit, isFaceDown);
-        setValue(id);
+        setCardValue(id);
     }
 
-    //    @Override
-    public void setPlayingCardValue(int id) {
-        int value;
+    @Override
+    public void setCardValue(int id) {
         if (id >= 2 && id <= 10) {
-            value = id;
+            setValue(id);
         } else if (id == 1) { // A
-            value = 11;
+            setValue(11);
         } else { // J, Q, K
-            value = 10;
+            setValue(10);
         }
-
-        setValue(value);
     }
 }

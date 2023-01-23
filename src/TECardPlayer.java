@@ -1,26 +1,32 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class TECardPlayer extends Player {
-    private boolean isBanker;
-    private int bet;
-    private int initBalance;    // initial balance at the start of the round
-    private int finalBalance;   // final balance at the end of the round
-    private int valOfCards;
-    private char currentStatus;
+public class TECardPlayer extends CardPlayer {
+    // TECardPlayer is a specific player created for Trianta Ena game
+    // This class contains some additional attributes and methods required for TE player
+
     private boolean isBust;
     private boolean isFold;
     private boolean isStand;
-    private List<PlayingCard> hand;
 
     public TECardPlayer(int id, String name) {
         super(id, name);
-        hand = new ArrayList<PlayingCard>();
+        isBust = false;
+        isFold = false;
+        isStand = false;
+    }
+    public TECardPlayer(TECardPlayer player, String name) {
+        super(player.getPlayerId(), name);
+        setInitBalance(player.getInitBalance());
+        setFinalBalance(player.getFinalBalance());
+        isBust = false;
+        isFold = false;
+        isStand = false;
     }
     public TECardPlayer() {
         super(1, "name");
-        hand = new ArrayList<PlayingCard>();
     }
+
     public boolean isBroke() {
         if (getFinalBalance() > 0) {
             return false;
@@ -29,16 +35,33 @@ public class TECardPlayer extends Player {
         }
     }
 
+    @Override
+    public String getName(){
+        String str = super.getName();
+        return str;
+    }
+
+    @Override
+    public void resetPlayer(){
+        super.resetPlayer();
+        isBust = false;
+        isFold = false;
+        isStand = false;
+    }
+
     public boolean isPlayerActive(){
         return (!isBroke() && !isBust() && !isFold() && getInitBalance() > 0);
     }
 
-    public boolean isBanker() {
-        return isBanker;
-    }
+    public List<TEPlayingCard> getTEPlayingCardHand() {
+        List<PlayingCard> hand = getHand();
+        List<TEPlayingCard> teHand = new ArrayList<TEPlayingCard>();
+        for (PlayingCard card : hand) {
+            TEPlayingCard tePlayingCard = (TEPlayingCard) card;
+            teHand.add(tePlayingCard);
+        }
 
-    public void setBanker(boolean banker) {
-        isBanker = banker;
+        return teHand;
     }
 
     public boolean isFold() {
@@ -47,46 +70,6 @@ public class TECardPlayer extends Player {
 
     public void setFold(boolean fold) {
         isFold = fold;
-    }
-
-    public int getBet() {
-        return bet;
-    }
-
-    public void setBet(int bet) {
-        this.bet = bet;
-    }
-
-    public int getInitBalance() {
-        return initBalance;
-    }
-
-    public void setInitBalance(int initBalance) {
-        this.initBalance = initBalance;
-    }
-
-    public int getFinalBalance() {
-        return finalBalance;
-    }
-
-    public void setFinalBalance(int finalBalance) {
-        this.finalBalance = finalBalance;
-    }
-
-    public int getValOfCards() {
-        return valOfCards;
-    }
-
-    public void setValOfCards(int valOfCards) {
-        this.valOfCards = valOfCards;
-    }
-
-    public char getCurrentStatus() {
-        return currentStatus;
-    }
-
-    public void setCurrentStatus(char currentStatus) {
-        this.currentStatus = currentStatus;
     }
 
     public boolean isBust() {
@@ -106,51 +89,44 @@ public class TECardPlayer extends Player {
     }
 
     public void clearPlayingCards() {
-        hand.clear();
+        clearHand();
     }
     public void faceAllCardsUp(){
-        for(PlayingCard card: hand){
+        for(TEPlayingCard card: getTEPlayingCardHand()){
             card.setIsFaceDown(false);
         }
     }
-    public void addPlayingCardToHand(PlayingCard card, boolean isFaceDown) {
-        card.setIsFaceDown(isFaceDown);
+    public void addPlayingCardToHand(TEPlayingCard card, boolean isFaceDown) {
         checkAceLogic(card);
-        int totalHandValue = getValOfCards();
-        setValOfCards(totalHandValue + card.getValue());
-        hand.add(card);
+        super.addPlayingCardToHand(card, isFaceDown);
 
         if (getValOfCards() > 31 && !isBust()) {
             setBust(true);
-            System.out.println("Sorry " + getName() + ", you have gone bust with a value of " + getValOfCards() + ".");
         }
     }
 
-    public void checkAceLogic(PlayingCard card){
+    public void checkAceLogic(TEPlayingCard card){
         boolean cardWithVal1 = false;
         if(card.getId() == 1){
-            for(PlayingCard inHandCard: hand){
+            for(TEPlayingCard inHandCard: getTEPlayingCardHand()){
                 if(inHandCard.getValue() == 1){
                     cardWithVal1 = true;
                 }
             }
             if(!cardWithVal1){
-                System.out.println("Do you want value of this Ace to be 1 (Y/N)?");
+                System.out.println(getName() + " do you want value of this Ace to be 1 (Y/N)?");
                 char ch = Utility.checkYesNo();
                 if(ch == 'Y'){
-                    card.setValueGivenVal(1);
+                    card.setValue(1);
                 } else {
-                    card.setValueGivenVal(11);
+                    card.setValue(11);
                 }
             }
         }
     }
 
-    public List<PlayingCard> getHand() {
-        return hand;
-    }
-
     public void showCards() {
+        List<TEPlayingCard> hand = getTEPlayingCardHand();
         int size = hand.size();
         for(int i = 0; i < size - 1; i++){
             if(!hand.get(i).getIsFaceDown()) {
@@ -166,7 +142,9 @@ public class TECardPlayer extends Player {
             System.out.print("*-*" + ", ");
         }
     }
+
     public void showMyCards() {
+        List<TEPlayingCard> hand = getTEPlayingCardHand();
         int size = hand.size();
         for(int i = 0; i < size - 1; i++){
             System.out.print(hand.get(i).printCard() + ", ");
@@ -174,5 +152,14 @@ public class TECardPlayer extends Player {
         System.out.print(hand.get(size -1).printCard());
         Utility.nextLine();
         Utility.nextLine();
+    }
+
+    @Override
+    public String toString() {
+        return "TECardPlayer{" +
+                "isBust=" + isBust +
+                ", isFold=" + isFold +
+                ", isStand=" + isStand +
+                '}';
     }
 }

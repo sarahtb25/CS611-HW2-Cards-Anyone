@@ -1,51 +1,38 @@
 import java.util.*;
 
-public class TEGame implements Game {
-    private List<TECardPlayer> players = new ArrayList<TECardPlayer>();
-    private TEPlayingCardDeck cards;
+public class TEGame implements Game, GameRules {
+    // Specific game class to play Trianta Ena game
+    // TEGame class implements Game interface and GameRules interface just any other game
+    // Contains methods which help us play the TE game
+
+    private Table<TEPlayingCardDeck> TETable;
+    private List<TECardPlayer> players;
+    private Banker banker;
     private int numOfRounds;    // Number of games played
-    private int cardRounds;      // There can be multiple card rounds in one round of game
     private Statistics gameStats;
 
     TEGame(){
-        cards = new TEPlayingCardDeck();
-        cards.createTEPlayingCardDeck();
-        cards.shuffleTEPlayingCards();
+        TETable = new Table(new TEPlayingCardDeck());
+        players = new ArrayList<TECardPlayer>();
+        initializePlayers();
         gameStats = new Statistics();
         numOfRounds = 0;
-        cardRounds = 0;
     }
 
     public List<TECardPlayer> getPlayers() {
         return players;
     }
 
-    public PlayingCardDeck getCards() {
-        return cards;
-    }
-
     public int getNumOfRounds() {
         return numOfRounds;
-    }
-
-    public int getCardRounds() {
-        return cardRounds;
     }
 
     public void setPlayers(List<TECardPlayer> players) {
         this.players = players;
     }
 
-    public void setCards(TEPlayingCardDeck cards) {
-        this.cards = cards;
-    }
-
     public void setNumOfRounds(int numOfRounds) {
         this.numOfRounds = numOfRounds;
-    }
-
-    public void setCardRounds(int cardRounds) {
-        this.cardRounds = cardRounds;
     }
 
     public void initializePlayers(){
@@ -54,7 +41,7 @@ public class TEGame implements Game {
 
         String totalPlayersValue = scn.next();
 
-        while(!checkIsNumber(totalPlayersValue) || Integer.parseInt(totalPlayersValue) > 10 || Integer.parseInt(totalPlayersValue) < 3) {
+        while(!Utility.checkIsNumber(totalPlayersValue) || Integer.parseInt(totalPlayersValue) > 10 || Integer.parseInt(totalPlayersValue) < 3) {
             System.out.print("Please enter total number of players playing the game (min. 3 and max. 10): ");
             totalPlayersValue = scn.next();
         }
@@ -68,7 +55,7 @@ public class TEGame implements Game {
         }
     }
 
-    public TECardPlayer setBankerRandomly() {
+    public Banker setBankerRandomly() {
         System.out.println("Assigning a banker randomly...");
         int numPlayers = players.size();
 
@@ -79,25 +66,29 @@ public class TEGame implements Game {
             playerId = rand.nextInt(numPlayers);
         }
 
-        players.get(playerId).setBanker(true);
+//        players.get(playerId).setBanker(true);
+        Banker dealer = new Banker(players.get(playerId));
+//                (Banker) players.get(playerId);
+        players.remove(players.get(playerId));
 
-        return players.get(playerId);
+        return dealer;
     }
-    public void printPlayers(TECardPlayer banker){
+
+    public void printPlayers(Banker banker){
         System.out.println("Here's the player information: ");
-        System.out.println("Banker: " + banker.getName() + "\t" + "Balance: " + banker.getInitBalance());
+//        System.out.println("Banker: " + banker.getName() + "\t" + "Balance: " + banker.getInitBalance());
+        System.out.println(banker.getName() + "\t" + "Balance: " + banker.getInitBalance());
         Utility.nextLine();
 
         System.out.println("Players: ");
         for(TECardPlayer player: players){
-            if(!player.isBanker()) {
-                System.out.print(player.getName() + "\t Balance: " + player.getInitBalance());
-                Utility.nextLine();
-            }
+            System.out.print(player.getName() + "\t Balance: " + player.getInitBalance());
+            Utility.nextLine();
         }
     }
 
     public void playGame() {
+        System.out.println("Welcome to Trianta Ena!");
         int balance = setInitialBalance();
 
         // Set player balance according to input and banker balance is 3 times
@@ -106,8 +97,7 @@ public class TEGame implements Game {
             player.setFinalBalance(balance);
         }
 
-        TECardPlayer banker = setBankerRandomly();
-//        System.out.println("Banker is " + banker.getName());
+        banker = setBankerRandomly();
         Utility.nextLine();
 
         banker.setInitBalance(3 * balance);
@@ -115,136 +105,165 @@ public class TEGame implements Game {
 
         boolean continuePlay = true;
         while(continuePlay){
+            updateBalance();
             printPlayers(banker);
             Utility.nextLine();
 
-            updateBalance();
             dealAndPlaceBet();
             hitOrStand();
             bankerLastTurn();
 
-            List<TECardPlayer> winners = calculateWinner();
+            List<TECardPlayer> winners = calculateWinners();
             settleBets(winners);
-            resetBets();
-            cardRounds = 0;
+
+            TETable.setCardRounds(0);
+//            cardRounds = 0;
             setNumOfRounds(getNumOfRounds() + 1);
-            sortPlayersByBalance();
-            pickNextBanker();
 
             RoundHistory gameRound = new RoundHistory();
+            gameRound.add(new TECardPlayer(banker, banker.getRealName()));
+
             for(TECardPlayer player: players){
                 gameRound.add(player);
             }
+            gameRound.declareWinners();
             gameStats.add(gameRound);
 
             System.out.println("Would you like to play another round (Y/N)? ");
             char ch = Utility.checkYesNo();
             if(ch == 'N'){
                 continuePlay = false;
+                gameStats.printStatistics();
+                Utility.nextLine();
+                gameStats.printOverallStatistics();
+                System.exit(1);
             }
+            else{
+                players.add(new TECardPlayer(banker, banker.getRealName()));
+                resetBets();
+                sortPlayersByBalance();
+                resetPlayers();
+                banker = pickNextBanker();
+            }
+            clearPlayerCards();
         }
     }
 
-    public void pickNextBanker(){
-        removeExistingBanker();
+    public void resetPlayers(){
+        for(TECardPlayer player: players){
+            player.resetPlayer();
+        }
+    }
+
+    public Banker pickNextBanker(){
+        Banker banker = new Banker();
+//        removeExistingBanker();
         boolean bankerFound = false;
         int i = 0;
 
         while(!bankerFound){
-            System.out.println(players.get(i) + " would you like to be the banker in next round (Y/N)?");
+            System.out.println(players.get(i).getName() + " would you like to be the banker in next round (Y/N)?");
             char ch = Utility.checkYesNo();
             if(ch == 'Y'){
                 bankerFound = true;
                 System.out.println("For the next round " + players.get(i).getName() +
                         " will be the banker");
-
+//                players.get(i).setBanker(true);
+                banker = new Banker(players.get(i));
+                players.remove(players.get(i));
             }
             i++;
         }
         if(!bankerFound){
-            TECardPlayer player = setBankerRandomly();
+            banker = setBankerRandomly();
         }
+        return banker;
     }
 
-    public void removeExistingBanker(){
-        for(TECardPlayer player: players){
-            if(player.isBanker()){
-                player.setBanker(false);
-                break;
-            }
-        }
-    }
+//    public void removeExistingBanker(){
+//        for(TECardPlayer player: players){
+//            if(player.isBanker()){
+//                player.setBanker(false);
+//                break;
+//            }
+//        }
+//    }
 
-    public List<TECardPlayer> calculateWinner(){
+    public List<TECardPlayer> calculateWinners(){
         List<TECardPlayer> winners = new ArrayList<TECardPlayer>();
-        int bankerCardVal = 0;
-        TECardPlayer bankerPlayer = new TECardPlayer(-1, "None");
+//        int bankerCardVal = 0;
+//        TECardPlayer bankerPlayer = new TECardPlayer(-1, "None");
 
         // Case 1: Banker gets natural TE => Banker wins
+//        for(TECardPlayer player: players){
+//            int playerCardVal = player.getValOfCards();
+//            if(player.isBanker()){
+//                bankerCardVal = playerCardVal;
+//            bankerPlayer = player;
+        if(checkForNaturalTE(banker)){
+            winners.add(banker);
+            return winners;
+        }
+//        }
+        // Case 2: Banker has gone bust
         for(TECardPlayer player: players){
-            int playerCardVal = player.getValOfCards();
-            if(player.isBanker()){
-                bankerCardVal = playerCardVal;
-                bankerPlayer = player;
-                if(checkForNaturalTE(player)){
-                    winners.add(player);
-                    return winners;
-                }
-                break;
+            if (banker.isBust() && !player.isBust()) {
+                winners.add(player);
             }
         }
 
-        // Case 2: Players vs banker
+        // Case 3: Players vs banker
         boolean bankerWinOnly = true;
         for(TECardPlayer player: players){
             int playerCardVal = player.getValOfCards();
-            if(!player.isBanker()){
-                if(checkForNaturalTE(player)){
-                    winners.add(player);
-                    bankerWinOnly = false;
-                } else if (playerCardVal > bankerCardVal && !player.isBust()) {
-                    bankerWinOnly = false;
-                    winners.add(player);
-                }
+//            if(!player.isBanker()){
+            if(checkForNaturalTE(player)){
+                winners.add(player);
+                bankerWinOnly = false;
+            } else if (playerCardVal > banker.getValOfCards() && !player.isBust()) {
+                bankerWinOnly = false;
+                winners.add(player);
             }
+//            }
         }
         if(bankerWinOnly){
-            winners.add(bankerPlayer);
+            winners.add(banker);
         }
 
         return winners;
     }
 
     public void checkDeck(){
-        if(cards.deckSize() < 2 ){
-            cards = new TEPlayingCardDeck();
-//            cards.resetDeck();
-            clearPlayerCards();
-        }
+        TETable.getCards().checkAndResetDeck();
+//        if(cards.deckSize() < 2 ){
+//            cards = new TEPlayingCardDeck();
+////            cards.resetDeck();
+//            clearPlayerCards();
+//        }
     }
 
     public void dealCards(){
-        if(cardRounds == 0){
+        if(TETable.getCardRounds() == 0){
             // Dealer deals 1 card face down to each player, dealer gets 1 face up card
-            for(TECardPlayer player: players){
-                if(player.isPlayerActive()) {
-                    if (player.isBanker()) {
-                        checkDeck();
-                        player.addPlayingCardToHand(cards.drawTEPlayingCard(), false);
-                    } else {
-                        checkDeck();
-                        player.addPlayingCardToHand(cards.drawTEPlayingCard(), true);
-                    }
-                }
-            }
-        }
-        else if(cardRounds == 1){
-            // Dealer deals 2 cards faceup to each player
+            checkDeck();
+            banker.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
             for(TECardPlayer player: players){
                 if(player.isPlayerActive()) {
                     checkDeck();
-                    player.addPlayingCardToHand(cards.drawCard(), false);
-                    player.addPlayingCardToHand(cards.drawCard(), false);
+                    player.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), true);
+                }
+            }
+        }
+        else if(TETable.getCardRounds() == 1){
+            // Dealer deals 2 cards faceup to each player
+            checkDeck();
+            banker.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
+            banker.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
+            for(TECardPlayer player: players){
+                if(player.isPlayerActive()) {
+                    checkDeck();
+                    player.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
+                    player.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
                 }
             }
         }
@@ -252,13 +271,13 @@ public class TEGame implements Game {
 
     public void dealAndPlaceBet(){
         dealCards();    // Deal 1st round of cards
-        setCardRounds(getCardRounds() + 1);
-        System.out.println("Its time to place bets");
+        TETable.setCardRounds(TETable.getCardRounds() + 1);
+        System.out.println("It's time to place bets");
         Scanner scn = new Scanner(System.in);
 
         for(TECardPlayer player: players) {
-            if (player.isPlayerActive() && !player.isBanker()) {
-                showTable(player);
+            if (player.isPlayerActive()) {
+                showPlayerAndBankerCards(player);
 //                 display cards of all the players and his own card. To help the player place a bet
                 System.out.print(player.getName());
                 System.out.print(" would you like to place a bet (Y/N)? ");
@@ -270,7 +289,7 @@ public class TEGame implements Game {
 
                     int bet = scn.nextInt();
                     while (bet > player.getInitBalance()) {
-                        System.out.println("Can't place more than you own !! Try again");
+                        System.out.println("Can't place more than you own! Try again");
                         System.out.println(player.getName() + " place your bets please: ");
                         bet = scn.nextInt();
                     }
@@ -282,73 +301,75 @@ public class TEGame implements Game {
         }
 
         dealCards();
-        setCardRounds(getCardRounds() + 1);
+        TETable.setCardRounds(TETable.getCardRounds() + 1);
     }
 
-    public void showTable(TECardPlayer currentPlayer){
+    public void showPlayerAndBankerCards(TECardPlayer currentPlayer){
+        System.out.println(banker.getName());
+        banker.showCards();
+        Utility.nextLine();
+        Utility.nextLine();
         for(TECardPlayer player: players){
             if(player.getPlayerId() != currentPlayer.getPlayerId()) {
-                if (player.isBanker()) {
-                    System.out.print("Banker: ");
-                }
                 System.out.println(player.getName());
                 player.showCards();
                 Utility.nextLine();
                 Utility.nextLine();
             }
         }
-        System.out.println("Your (" + currentPlayer.getName() + ") cards: ");
-        currentPlayer.showMyCards();
-        System.out.println("Current value of Hand: " + currentPlayer.getValOfCards());
+        getCardsAndValue(currentPlayer);
         Utility.nextLine();
     }
 
-    public void hitOrStand(){
-//        Scanner scn = new Scanner(System.in);
-        for(TECardPlayer player: players){
-            if(!player.isBanker() && player.isPlayerActive()){
-                System.out.println(player.getName() + " Hit (Y/N)? ");
+    public void getCardsAndValue(TECardPlayer currentPlayer){
+        System.out.println("Your (" + currentPlayer.getName() + ") cards: ");
+        currentPlayer.showMyCards();
+        System.out.println("Current value of Hand: " + currentPlayer.getValOfCards());
+    }
 
-                char ch = Utility.checkYesNo();
-                if (ch == 'Y') {
-                    checkDeck();
-                    player.addPlayingCardToHand(cards.drawCard(), false);
-                }
-                else {
-                    player.setStand(true);
-                }
+    public void hitOrStand(){
+        for(TECardPlayer player: players){
+            if(player.isPlayerActive()){
+                System.out.println(player.getName() + " Cards: ");
+                player.showMyCards();
+                Utility.nextLine();
+                System.out.println("Current value of Hand: " + player.getValOfCards());
+                takeHit(player);
             }
         }
     }
 
     public void bankerLastTurn(){
+        if(banker.isPlayerActive()){
+            banker.faceAllCardsUp();
+            boolean takeHitFlag = true;
+            if(banker.getValOfCards() >= 27){
+                takeHitFlag = false;
+                System.out.println("Banker can't take a hit!");
+                getCardsAndValue(banker);
+            }
+            else{
+                System.out.println("Banker is taking a Hit");
+            }
 
-        for(TECardPlayer player: players){
-            if(player.isBanker() && player.isPlayerActive()){
-                player.faceAllCardsUp();
-                boolean takeHitFlag = true;
+            while(takeHitFlag) {
+                checkDeck();
+                banker.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
+                getCardsAndValue(banker);
 
-                while(takeHitFlag) {
-                    checkDeck();
-                    player.addPlayingCardToHand(cards.drawCard(), false);
-
-                    if(player.getValOfCards() >= 27){
-                        takeHitFlag = false;
-                    }
-                    else{
-                        System.out.println("Taking a Hit again ");
-                    }
+                if(banker.getValOfCards() >= 27){
+                    takeHitFlag = false;
                 }
-                break;
+                else{
+                    System.out.println("Taking a Hit again ");
+                }
             }
         }
     }
 
-    public void displayTurn(){
-
-    }
 
     public void clearPlayerCards() {
+        banker.clearPlayingCards();
         for (TECardPlayer player : players) {
             player.clearPlayingCards();
         }
@@ -361,10 +382,12 @@ public class TEGame implements Game {
             char ch = Utility.checkYesNo();
             if (ch == 'Y') {
                 checkDeck();
-                player.addPlayingCardToHand(cards.drawCard(), false);
+                player.addPlayingCardToHand((TEPlayingCard) TETable.getCards().drawCard(), false);
+                getCardsAndValue(player);
 
                 if(player.isBust()){
                     takeHitFlag = false;
+                    System.out.println(player.getName() + " you have gone bust! ");
                 }
                 else{
                     System.out.println(player.getName() + " Hit again (Y/N)? ");
@@ -381,11 +404,11 @@ public class TEGame implements Game {
         boolean isNaturalTE = false;
         int numAceKQJ = 0;
 
-        List<PlayingCard> playerHand = player.getHand();
+        List<TEPlayingCard> playerHand = player.getTEPlayingCardHand();
         int playerHandVal = player.getValOfCards();
 
         if (playerHandVal == 31 && playerHand.size() == 3) {
-            for(PlayingCard card : playerHand) {
+            for(TEPlayingCard card : playerHand) {
                 if (card.getId() == 1 || card.getId() == 11 || card.getId() == 12 || card.getId() == 13) {
                     numAceKQJ++;
                 }
@@ -401,47 +424,45 @@ public class TEGame implements Game {
 
     public void settleBets(List<TECardPlayer> winners) {
         // Only Banker wins => everyone else pays the banker
-        TECardPlayer banker = new TECardPlayer(-1, "None");
+//        TECardPlayer banker = new TECardPlayer(-1, "None");
+
+//        for (TECardPlayer player : players) {
+//            if (player.isBanker()) {
+//                banker = player;
+//                break;
+//            }
+//        }
 
         for (TECardPlayer player : players) {
-            if (player.isBanker()) {
-                banker = player;
-                break;
-            }
-        }
-
-        if (winners.size() == 1 && winners.get(0).isBanker()) {
-            for (TECardPlayer player : players) {
-                if (!player.isBanker() && !player.isFold()) {
-                    player.setFinalBalance(player.getFinalBalance() - player.getBet());
-                    winners.get(0).setFinalBalance(winners.get(0).getFinalBalance() + player.getBet());
-                }
-            }
-        } else { // winners other than bankers
-            for (TECardPlayer winner : winners) {
-                if (!winner.isBanker()) {
-                    winner.setFinalBalance(winner.getFinalBalance() + winner.getBet());
-                    banker.setFinalBalance(banker.getFinalBalance() - winner.getBet());
-                }
-            }
-        }
-
-        // losers pay the banker
-        for (TECardPlayer player : players) {
-            if (!player.isBanker() && !player.isFold() && player.isBust()) {
+            if (winners.contains(player)) {
+                banker.setFinalBalance(banker.getFinalBalance() - player.getBet());
+                player.setFinalBalance(player.getFinalBalance() + player.getBet());
+            } else {
                 player.setFinalBalance(player.getFinalBalance() - player.getBet());
                 banker.setFinalBalance(banker.getFinalBalance() + player.getBet());
             }
         }
+
+        printBetAndBalance(banker);
+        for (TECardPlayer player : players) {
+            printBetAndBalance(player);
+//            System.out.println("Player " + player.getName() + "\n\tInitial Balance: " + player.getInitBalance() + "\n\tBet: " + player.getBet() + "\n\tFinal Balance: " + player.getFinalBalance());
+        }
+    }
+
+    public void printBetAndBalance(TECardPlayer player){
+        System.out.println(player.getName() + "\n\tInitial Balance: " + player.getInitBalance() + "\n\tBet: " + player.getBet() + "\n\tFinal Balance: " + player.getFinalBalance());
     }
 
     public void resetBets() {
+        banker.setBet(0);
         for (TECardPlayer player: players) {
             player.setBet(0);
         }
     }
 
     public void updateBalance() {
+        banker.setInitBalance(banker.getFinalBalance());
         for (TECardPlayer player: players) {
             player.setInitBalance(player.getFinalBalance());
         }
@@ -464,22 +485,11 @@ public class TEGame implements Game {
         Scanner scan = new Scanner(System.in);
         String balance = scan.next();
 
-        while(!checkIsNumber(balance) || Integer.parseInt(balance) <= 0) {
+        while(!Utility.checkIsNumber(balance) || Integer.parseInt(balance) <= 0) {
             System.out.println("Balance has to be a positive number!");
             balance = scan.next();
         }
 
         return Integer.parseInt(balance);
-    }
-
-    public boolean checkIsNumber(String val) {
-        int num;
-
-        try {
-            num = Integer.parseInt(val);
-            return true;
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
     }
 }
